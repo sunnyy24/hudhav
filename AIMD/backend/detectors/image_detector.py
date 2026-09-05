@@ -1,0 +1,143 @@
+from PIL import Image
+
+
+MODEL_NAME = "capcheck/ai-human-generated-image-detection"
+
+
+class AIImageDetector:
+
+    def __init__(self):
+
+        import torch
+        from transformers import (
+            AutoImageProcessor,
+            AutoModelForImageClassification
+        )
+
+        print("[AIMD] Loading AI image detector...")
+
+        self._torch = torch
+        self.device = self._get_device()
+
+        print(f"[AIMD] Device: {self.device}")
+        print(f"[AIMD] Model: {MODEL_NAME}")
+
+        self.processor = AutoImageProcessor.from_pretrained(
+            MODEL_NAME
+        )
+
+        self.model = AutoModelForImageClassification.from_pretrained(
+            MODEL_NAME
+        )
+
+        self.model.to(self.device)
+        self.model.eval()
+
+        print("[AIMD] ML detector loaded successfully.")
+
+    def _get_device(self):
+
+        if self._torch.backends.mps.is_available():
+            return self._torch.device("mps")
+
+        if self._torch.cuda.is_available():
+            return self._torch.device("cuda")
+
+        return self._torch.device("cpu")
+
+    def predict(self, image_path: str) -> dict:
+
+        image = Image.open(image_path).convert("RGB")
+
+        inputs = self.processor(
+            images=image,
+            return_tensors="pt"
+        )
+
+        inputs = {
+            key: value.to(self.device)
+            for key, value in inputs.items()
+        }
+
+        with self._torch.no_grad():
+
+            outputs = self.model(**inputs)
+
+            probabilities = self._torch.softmax(
+                outputs.logits,
+                dim=-1
+            )[0]
+
+        scores = {}
+
+        for index, probability in enumerate(probabilities):
+
+            label = self.model.config.id2label[index]
+
+            scores[label] = float(probability.item())
+
+        ai_score = 0.0
+        human_score = 0.0
+
+        for label, score in scores.items():
+
+            normalized_label = label.lower()
+
+            if "ai" in normalized_label:
+
+                ai_score = score
+
+            elif "human" in normalized_label:
+
+                human_score = score
+
+        if ai_score >= human_score:
+
+            prediction = "AI-GENERATED"
+            confidence = ai_score
+
+        else:
+
+            prediction = "HUMAN"
+            confidence = human_score
+
+        return {
+            "status": "available",
+            "model": MODEL_NAME,
+            "prediction": prediction,
+            "confidence": round(confidence, 6),
+            "ai_probability": round(ai_score, 6),
+            "human_probability": round(human_score, 6),
+            "raw_scores": scores
+        }
+
+
+class UnavailableAIImageDetector:
+
+    def predict(self, image_path: str) -> dict:
+        return {
+            "status": "unavailable",
+            "model": MODEL_NAME,
+            "prediction": "INCONCLUSIVE",
+            "confidence": 0.0,
+            "ai_probability": None,
+            "human_probability": None,
+            "raw_scores": {},
+            "reason": "PyTorch or Transformers is not installed."
+        }
+
+
+_detector = None
+
+
+def get_detector():
+
+    global _detector
+
+    if _detector is None:
+        try:
+            _detector = AIImageDetector()
+        except ImportError:
+            _detector = UnavailableAIImageDetector()
+
+    return _detector

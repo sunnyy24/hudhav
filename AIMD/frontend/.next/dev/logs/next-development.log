@@ -1,0 +1,27 @@
+{"timestamp":"00:00:00.637","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:00.638","source":"Server","level":"LOG","message":"✓ Generated AGENTS.md and CLAUDE.md for AI agents. Set `agentRules: false` in next.config to disable."}
+{"timestamp":"00:00:22.329","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:32.407","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:59.693","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:01:05.306","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:08:04.883","source":"Server","level":"LOG","message":"✓ Compiled in 201ms"}
+{"timestamp":"00:08:35.962","source":"Server","level":"LOG","message":"✓ Compiled in 66ms"}
+{"timestamp":"00:09:33.669","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:11:20.738","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:14:44.839","source":"Server","level":"LOG","message":"✓ Compiled in 243ms"}
+{"timestamp":"00:14:54.299","source":"Server","level":"LOG","message":"✓ Compiled in 114ms"}
+{"timestamp":"00:15:30.555","source":"Server","level":"LOG","message":"✓ Compiled in 93ms"}
+{"timestamp":"00:17:16.453","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:18:05.108","source":"Server","level":"LOG","message":"✓ Compiled in 141ms"}
+{"timestamp":"00:18:37.800","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:18:58.813","source":"Server","level":"LOG","message":"✓ Compiled in 555ms"}
+{"timestamp":"00:19:57.364","source":"Server","level":"LOG","message":"✓ Compiled in 117ms"}
+{"timestamp":"00:21:43.573","source":"Server","level":"LOG","message":"✓ Compiled in 66ms"}
+{"timestamp":"00:22:23.461","source":"Server","level":"LOG","message":"✓ Compiled in 67ms"}
+{"timestamp":"00:23:17.625","source":"Server","level":"LOG","message":"✓ Compiled in 75ms"}
+{"timestamp":"00:33:30.383","source":"Server","level":"LOG","message":"✓ Compiled in 343ms"}
+{"timestamp":"00:38:58.880","source":"Server","level":"LOG","message":"  Reload env: .env.local"}
+{"timestamp":"00:38:59.172","source":"Server","level":"LOG","message":"✓ Compiled in 182ms"}
+{"timestamp":"00:39:03.197","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"01:00:40.032","source":"Browser","level":"WARN","message":"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior"}
+{"timestamp":"01:00:40.144","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33mDetected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\\\"smooth\\\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior\\u001b[39m\""}
