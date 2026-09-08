@@ -1,7 +1,8 @@
 from PIL import Image
 
 
-MODEL_NAME = "capcheck/ai-human-generated-image-detection"
+MODEL_NAME = "dima806/ai_vs_real_image_detection"
+MODEL_ARCHITECTURE = "ViTForImageClassification"
 
 
 class AIImageDetector:
@@ -47,26 +48,52 @@ class AIImageDetector:
 
     def predict(self, image_path: str) -> dict:
 
-        image = Image.open(image_path).convert("RGB")
+        try:
+            image = Image.open(image_path).convert("RGB")
+        except Exception:
+            return {
+                "status": "unavailable",
+                "model": MODEL_NAME,
+                "architecture": MODEL_ARCHITECTURE,
+                "prediction": "INCONCLUSIVE",
+                "confidence": 0.0,
+                "ai_probability": None,
+                "human_probability": None,
+                "raw_scores": {},
+                "reason": "The image could not be opened for ML inference.",
+            }
 
-        inputs = self.processor(
-            images=image,
-            return_tensors="pt"
-        )
+        try:
+            inputs = self.processor(
+                images=image,
+                return_tensors="pt"
+            )
 
-        inputs = {
-            key: value.to(self.device)
-            for key, value in inputs.items()
-        }
+            inputs = {
+                key: value.to(self.device)
+                for key, value in inputs.items()
+            }
 
-        with self._torch.no_grad():
+            with self._torch.no_grad():
 
-            outputs = self.model(**inputs)
+                outputs = self.model(**inputs)
 
-            probabilities = self._torch.softmax(
-                outputs.logits,
-                dim=-1
-            )[0]
+                probabilities = self._torch.softmax(
+                    outputs.logits,
+                    dim=-1
+                )[0]
+        except Exception:
+            return {
+                "status": "unavailable",
+                "model": MODEL_NAME,
+                "architecture": MODEL_ARCHITECTURE,
+                "prediction": "INCONCLUSIVE",
+                "confidence": 0.0,
+                "ai_probability": None,
+                "human_probability": None,
+                "raw_scores": {},
+                "reason": "ML inference failed.",
+            }
 
         scores = {}
 
@@ -83,13 +110,26 @@ class AIImageDetector:
 
             normalized_label = label.lower()
 
-            if "ai" in normalized_label:
+            if any(marker in normalized_label for marker in ("ai", "fake", "synthetic", "artificial")):
 
                 ai_score = score
 
-            elif "human" in normalized_label:
+            elif any(marker in normalized_label for marker in ("human", "real", "authentic")):
 
                 human_score = score
+
+        if not scores:
+            return {
+                "status": "unavailable",
+                "model": MODEL_NAME,
+                "architecture": MODEL_ARCHITECTURE,
+                "prediction": "INCONCLUSIVE",
+                "confidence": 0.0,
+                "ai_probability": None,
+                "human_probability": None,
+                "raw_scores": {},
+                "reason": "The ML detector returned an unusable output.",
+            }
 
         if ai_score >= human_score:
 
@@ -104,6 +144,7 @@ class AIImageDetector:
         return {
             "status": "available",
             "model": MODEL_NAME,
+            "architecture": MODEL_ARCHITECTURE,
             "prediction": prediction,
             "confidence": round(confidence, 6),
             "ai_probability": round(ai_score, 6),
@@ -114,16 +155,20 @@ class AIImageDetector:
 
 class UnavailableAIImageDetector:
 
+    def __init__(self, reason: str = "PyTorch or Transformers is not installed."):
+        self.reason = reason
+
     def predict(self, image_path: str) -> dict:
         return {
             "status": "unavailable",
             "model": MODEL_NAME,
+            "architecture": MODEL_ARCHITECTURE,
             "prediction": "INCONCLUSIVE",
             "confidence": 0.0,
             "ai_probability": None,
             "human_probability": None,
             "raw_scores": {},
-            "reason": "PyTorch or Transformers is not installed."
+            "reason": self.reason,
         }
 
 
@@ -138,6 +183,12 @@ def get_detector():
         try:
             _detector = AIImageDetector()
         except ImportError:
-            _detector = UnavailableAIImageDetector()
+            _detector = UnavailableAIImageDetector(
+                "PyTorch or Transformers is not installed."
+            )
+        except Exception:
+            return UnavailableAIImageDetector(
+                "The open-weight classifier could not be loaded."
+            )
 
     return _detector
